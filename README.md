@@ -11,4 +11,5 @@ Windows Instructions:
 7. Finally, run the command **"python supplies.py"** to start the program and generate graphs. Graphs will be stored in the "CMS-Research-main/graphs" folder
 
 Mac OS Instructions:
+
 I think it should be the same using Terminal instead of Command Prompt

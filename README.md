@@ -9,3 +9,6 @@ Windows Instructions:
 5. Install python if you havent already. You can run the command **"python -V"** to check. If you see a response, it is installed on your device.
 6. Run the command **"pip install -r requirements.txt"** to install libraries needed by the script.
 7. Finally, run the command **"python supplies.py"** to start the program and generate graphs. Graphs will be stored in the "CMS-Research-main/graphs" folder
+
+Mac OS Instructions:
+I think it should be the same using Terminal instead of Command Prompt

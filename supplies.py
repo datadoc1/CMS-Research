@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
 
+
+
 def extract_data(folder_name):
     all_data = pd.DataFrame()
     file_list = []
@@ -57,7 +59,7 @@ def create_us_heatmap(all_data, hcpcs_code, year):
     filename = f"{hcpcs_code}_{year}_heatmap.png"
     save_path = os.path.join(save_folder, filename)
     plt.savefig(save_path)
-    print("A heatmap has been saved as a .png file in the 'Graphs' folder.")
+    print("A heatmap has been saved as a .png file in the 'Graphs' folder.\n")
     plt.clf()
 
 def create_line_chart(all_data, hcpcs_code):
@@ -90,12 +92,13 @@ def create_line_chart(all_data, hcpcs_code):
     filename = f"{hcpcs_code}_{str(year)}_historic_prices.png"
     save_path = os.path.join(save_folder, filename)
     plt.savefig(save_path)
-    print("A linechart has been saved as a .png file in the 'graphs' folder.")
+    print("A linechart has been saved as a .png file in the 'graphs' folder.\n")
     plt.clf()
 
 def create_differential_abundance_plot(all_data, hcpcs_code, year):
     all_data = all_data[all_data["year"] == year]
     filtered_data = all_data[all_data["HCPCS_Cd"] == hcpcs_code]
+    # END: be15d9bcejpp
     grouped_data = filtered_data.groupby("Rfrg_Prvdr_Geo_Desc")["Avg_Suplr_Sbmtd_Chrg"].median()
     unwanted_items = ["Puerto Rico", "Armed Forces Europe", "Armed Forces Pacific", "Foreign Country", "Northern Mariana Islands", "Unknown", "Guam", "Virgin Islands", "National"]
     grouped_data = grouped_data[~grouped_data.index.isin(unwanted_items)]
@@ -151,7 +154,7 @@ def create_differential_abundance_plot(all_data, hcpcs_code, year):
     filename = f"{hcpcs_code}_{year}_barplot.png"
     save_path = os.path.join(save_folder, filename)
     plt.savefig(save_path)
-    print("A barplot has been saved as a .png file in the 'graphs' folder.")
+    print("A barplot has been saved as a .png file in the 'graphs' folder.\n")
     plt.clf()
 
 def create_regional_table(all_data, hcpcs_code, year, title=None):
@@ -198,7 +201,7 @@ def create_regional_table(all_data, hcpcs_code, year, title=None):
     filename = f"{hcpcs_code}_{year}_table.png"
     save_path = os.path.join(save_folder, filename)
     plt.savefig(save_path)
-    print("A table has been saved as a .png file in the 'graphs' folder.")
+    print("A table has been saved as a .png file in the 'graphs' folder.\n")
     plt.clf()
 
 # Extract all data from the folder "data"
@@ -215,13 +218,13 @@ while True:
     hcpcs_code = input("Enter the HCPCS code of interest: ")
     if hcpcs_code in all_data["HCPCS_Cd"].unique():
         break
-    print(f"The HCPCS code {hcpcs_code} is not in the dataset. Please try again.")
+    print(f"The HCPCS code {hcpcs_code} is not in the dataset. Please try again.\n")
 
 while True:
     year = int(input(f'Enter the year of interest ({lowest_year}-{highest_year}): '))
     if int(lowest_year) <= int(year) <= int(highest_year):
         break
-    print(f"Invalid input. Please enter a valid year between {lowest_year} and {highest_year}.")
+    print(f"Invalid input. Please enter a valid year between {lowest_year} and {highest_year}.\n")
 
 create_differential_abundance_plot(all_data, hcpcs_code, year)
 create_line_chart(all_data, hcpcs_code)

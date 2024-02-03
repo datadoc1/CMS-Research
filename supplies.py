@@ -4,6 +4,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
+import numpy as np
 warnings.filterwarnings('ignore')
 
 
@@ -54,6 +55,9 @@ def create_us_heatmap(all_data, hcpcs_code, year):
     plt.xlim(-190, -60)  # Replace x_min and x_max with your desired x-axis limits
     plt.ylim(15, 75)  # Replace y_min and y_max with your desired y-axis limits
 
+    # Remove x-axis and y-axis
+    plt.axis('off')
+
     # Save the plot
     save_folder = "graphs"
     filename = f"{hcpcs_code}_{year}_heatmap.png"
@@ -71,7 +75,7 @@ def create_line_chart(all_data, hcpcs_code):
 
     # Create a list of charges for each year
     charges = [round(national_data[national_data["year"] == year]["Avg_Suplr_Sbmtd_Chrg"].median(), 2) for year in years]
-    
+
     # Create a line graph
     plt.plot(years, charges)
 
@@ -83,16 +87,21 @@ def create_line_chart(all_data, hcpcs_code):
     default_title = f"Average Supplier Charge for ({hcpcs_code}) over the Years"
     user_title = input(f"Enter a title for the line chart (or press Enter to keep the default title '{default_title}'): ")
     if user_title:
-        plt.title(user_title)
+        plt.title(user_title, loc='center', wrap=True)
     else:
-        plt.title(default_title)
+        plt.title(default_title, loc='center', wrap=True)
+
+    # Add labels to each point on the line chart
+    for i, charge in enumerate(charges):
+        plt.scatter(years[i], charge, color='black')
+        plt.text(years[i], charge, f"${charge}", ha='center', va='bottom')
 
     # Save the plot
     save_folder = "graphs"
     filename = f"{hcpcs_code}_{str(year)}_historic_prices.png"
     save_path = os.path.join(save_folder, filename)
     plt.savefig(save_path)
-    print("A linechart has been saved as a .png file in the 'graphs' folder.\n")
+    print("A line chart has been saved as a .png file in the 'graphs' folder.\n")
     plt.clf()
 
 def create_differential_abundance_plot(all_data, hcpcs_code, year):
@@ -120,9 +129,15 @@ def create_differential_abundance_plot(all_data, hcpcs_code, year):
     for i, value in enumerate(sorted_data):
         if i < 5 or i >= len(sorted_data) - 5:
             if value > median_value:
-                label = f"+${value - median_value:.2f}"
+                if value - median_value > 100 or value - median_value < -100:
+                    label = f"+${int(value - median_value)}"
+                else:
+                    label = f"+${value - median_value:.2f}"
             else:
-                label = f"${value - median_value:.2f}"
+                if value - median_value > 100 or value - median_value < -100:
+                    label = f"${int(value - median_value)}"
+                else:
+                    label = f"${value - median_value:.2f}"
             if value > median_value:
                 plt.text(i-41, value - median_value, label, ha='center', va='bottom', color='black')
             else:
@@ -139,9 +154,9 @@ def create_differential_abundance_plot(all_data, hcpcs_code, year):
     default_title = "Supplier Charges for " + hcpcs_code + " in " + str(year)
     user_title = input(f"Enter a title for the barplot (or press Enter to keep the default title '{default_title}'): ")
     if user_title:
-        plt.title(user_title)
+        plt.title(user_title, loc='center', wrap=True)
     else:
-        plt.title(default_title)
+        plt.title(default_title, loc='center', wrap=True)
 
     # Add the median value to every value of the y-axis
     plt.yticks([sorted_data.min() - median_value, 0, sorted_data.max() - median_value], [f"${sorted_data.min():.2f}", f"${median_value:.2f}", f"${sorted_data.max():.2f}"])
@@ -186,9 +201,9 @@ def create_regional_table(all_data, hcpcs_code, year, title=None):
     if not title:
         title = default_title
     if title:
-        plt.title(title)
+        plt.title(title, wrap=True, loc='center')
     else:
-        plt.title(default_title)
+        plt.title(default_title, wrap=True, loc='center')
 
     # Create a table visualization
     fig, ax = plt.subplots()
@@ -202,6 +217,46 @@ def create_regional_table(all_data, hcpcs_code, year, title=None):
     save_path = os.path.join(save_folder, filename)
     plt.savefig(save_path)
     print("A table has been saved as a .png file in the 'graphs' folder.\n")
+    plt.clf()
+
+def generate_scatterplot(all_data, hcpcs_code, year):
+    all_data = all_data[all_data["year"] == year]
+    filtered_data = all_data[(all_data["HCPCS_Cd"] == hcpcs_code)]
+    filtered_data = filtered_data[filtered_data["Rfrg_Prvdr_Geo_Lvl"] == "National"]
+
+    # Create a scatterplot
+    plt.scatter(filtered_data["Tot_Suplr_Srvcs"], filtered_data["Avg_Suplr_Sbmtd_Chrg"], alpha=0.5)
+
+    # Calculate the linear regression line
+    x = filtered_data["Tot_Suplr_Srvcs"]
+    y = filtered_data["Avg_Suplr_Sbmtd_Chrg"]
+    m, b = np.polyfit(x, y, 1)
+    plt.plot(x, m*x + b, color='red')
+
+    # Calculate the correlation coefficient (R value)
+    r_value = np.corrcoef(x, y)[0, 1]
+
+    # Set the labels for the X-axis and Y-axis
+    plt.xlabel("HCPCS Code")
+    plt.ylabel("Average Supplier Charge (USD)")
+
+    # Set the title of the graph
+    default_title = f"Supplier Charges for {hcpcs_code} in {year}"
+    user_title = input(f"Enter a title for the scatterplot (or press Enter to keep the default title '{default_title}'): ")
+    if user_title:
+        plt.title(user_title, loc='center', wrap=True)
+    else:
+        plt.title(default_title, loc='center', wrap=True)
+
+    # Add the R value to the plot
+    plt.text(0.95, 0.05, f"R = {r_value:.2f}", ha='right', va='center', transform=plt.gca().transAxes)
+
+    # Save the plot
+    save_folder = "graphs"
+    filename = f"{hcpcs_code}_{year}_scatterplot.png"
+    save_path = os.path.join(save_folder, filename)
+    plt.savefig(save_path)
+    print("A scatterplot has been saved as a .png file in the 'graphs' folder.\n")
     plt.clf()
 
 # Extract all data from the folder "data"
@@ -230,3 +285,4 @@ create_differential_abundance_plot(all_data, hcpcs_code, year)
 create_line_chart(all_data, hcpcs_code)
 create_regional_table(all_data, hcpcs_code, year)
 create_us_heatmap(all_data, hcpcs_code, year)
+generate_scatterplot(all_data, hcpcs_code, year)

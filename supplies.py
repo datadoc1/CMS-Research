@@ -222,7 +222,7 @@ def create_regional_table(all_data, hcpcs_code, year, title=None):
 def generate_scatterplot(all_data, hcpcs_code, year):
     all_data = all_data[all_data["year"] == year]
     filtered_data = all_data[(all_data["HCPCS_Cd"] == hcpcs_code)]
-    filtered_data = filtered_data[filtered_data["Rfrg_Prvdr_Geo_Lvl"] == "National"]
+    filtered_data = filtered_data[filtered_data["Rfrg_Prvdr_Geo_Lvl"] == "State"]
 
     # Create a scatterplot
     plt.scatter(filtered_data["Tot_Suplr_Srvcs"], filtered_data["Avg_Suplr_Sbmtd_Chrg"], alpha=0.5)

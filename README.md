@@ -14,10 +14,10 @@ Mac OS Instructions:
 1. Download the ZIP file for this repository (click the green "<> Code" button -> Download ZIP)
 2. Unzip the folder, it should be named CMS-Research-main
 3. Open Terminal (you can find it in Applications -> Utilities or by using Spotlight search)
-4. Type the command "cd {your_folder_path}" to navigate to the directory where you unzipped the folder. You can do this by typing "cd " and then dragging the folder into the Terminal window.
-5. Install Python if you haven't already. You can check if Python is installed on your Mac by running the command "python -V". If you see a response, it is installed on your device.
-6. Run the command "pip install -r requirements.txt" to install the libraries needed by the script.
-7. Finally, run the command "python supplies.py" to start the program and generate graphs. Graphs will be stored in the "CMS-Research-main/graphs" folder.
+4. Type the command **"cd {your_folder_path}"** to navigate to the directory where you unzipped the folder. You can do this by typing **"cd "** and then dragging the folder into the Terminal window.
+5. Install Python if you haven't already. You can check if Python is installed on your Mac by running the command **"python -V"**. If you see a response, it is installed on your device. Otherwise follow the python installation instructions below and return after installation.
+6. Run the command **"pip install -r requirements.txt"** to install the libraries needed by the script.
+7. Finally, run the command **"python supplies.py"** to start the program and generate graphs. Graphs will be stored in the "CMS-Research-main/graphs" folder.
 
 Python Installation:
 1. Open a web browser and go to the official Python website: python.org

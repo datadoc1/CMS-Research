@@ -1,5 +1,5 @@
 # CMS-Research
- For medical student research using publically available CMS data
+This script creates a series of graphs on the geographical and historical pricing trends of a medical device/HCPCS Code of your choice.
 
 Windows/MacOS Instructions:
 1. Download the ZIP file for this repository (click the green "<> Code" button -> Download ZIP)

@@ -32,17 +32,33 @@ def create_us_heatmap(all_data, hcpcs_code, year):
     all_data = all_data[all_data["year"] == year]
     filtered_data = all_data[all_data["HCPCS_Cd"] == hcpcs_code]
     grouped_data = filtered_data.groupby("Rfrg_Prvdr_Geo_Desc")["Avg_Suplr_Sbmtd_Chrg"].median()
-    unwanted_items = ["Puerto Rico", "Armed Forces Europe", "Armed Forces Pacific", "Foreign Country", "Northern Mariana Islands", "Unknown", "Guam", "Virgin Islands"]
+    unwanted_items = ["Puerto Rico", "Armed Forces Europe", "Armed Forces Pacific", "Foreign Country", "Northern Mariana Islands", "Unknown", "Guam", "Virgin Islands", "National"]
     grouped_data = grouped_data[~grouped_data.index.isin(unwanted_items)]
 
-    # Read the shapefile
-    shapefile_path = "shapefiles/tl_2022_us_state.shp"
-    shapefile_data = gpd.read_file(shapefile_path)
+    # Load US states shapefile
+    us_states = gpd.read_file("shapefiles/cb_2018_us_state_500k.shp")
 
-    merged_data = shapefile_data.merge(grouped_data, left_on="NAME", right_index=True)
+    us_states = us_states.merge(grouped_data, left_on="NAME", right_index=True)
     # Plot the heatmap with borders
-    merged_data.plot(column="Avg_Suplr_Sbmtd_Chrg", cmap="YlGnBu", legend=True, edgecolor="black")
+    # us_states.plot(column="Avg_Suplr_Sbmtd_Chrg", cmap="YlGnBu", legend=True, edgecolor="black")
 
+    # Create main plot for continental US
+    fig, ax = plt.subplots(1, 1, figsize=(20, 10))
+    us_states[~us_states['STUSPS'].isin(['HI', 'AK', 'PR', 'VI', 'GU', 'MP', 'AS'])].plot(column='Avg_Suplr_Sbmtd_Chrg', cmap='Blues', linewidth=0.8, ax=ax, edgecolor='0.8', legend=False)
+
+    # Create inset for Alaska
+    ax_ak = fig.add_axes([0.0, -0.25, 1, 1])  # position and size of the inset (left, bottom, width, height)
+    us_states[us_states['STUSPS'] == 'AK'].plot(column='Avg_Suplr_Sbmtd_Chrg', cmap='Blues', linewidth=0.8, ax=ax_ak, edgecolor='0.8')
+
+    # Create inset for Hawaii
+    ax_hi = fig.add_axes([-0.15, 0.1, 0.5, 0.5])  # position and size of the inset (left, bottom, width, height)
+    us_states[us_states['STUSPS'] == 'HI'].plot(column='Avg_Suplr_Sbmtd_Chrg', cmap='Blues', linewidth=0.8, ax=ax_hi, edgecolor='0.8')
+
+    ax.axis('off')
+    ax_ak.axis('off')
+    ax_hi.axis('off')
+
+    '''
     # Add a title to the plot
     default_title = f"Cost of {filtered_data.iloc[0]['HCPCS_Desc']} ({hcpcs_code}) by State"
     user_title = input(f"Enter a title for the heatmap (or press Enter to keep the default title '{default_title}'): ")
@@ -50,13 +66,7 @@ def create_us_heatmap(all_data, hcpcs_code, year):
         plt.title(user_title, loc='center', wrap=True)
     else:
         plt.title(default_title, loc='center', wrap=True)
-
-    # Set the limits for the x-axis and y-axis to zoom in on specific region
-    plt.xlim(-190, -60)  # Replace x_min and x_max with your desired x-axis limits
-    plt.ylim(15, 75)  # Replace y_min and y_max with your desired y-axis limits
-
-    # Remove x-axis and y-axis
-    plt.axis('off')
+    '''
 
     # Save the plot
     save_folder = "graphs"
@@ -237,7 +247,7 @@ def generate_scatterplot(all_data, hcpcs_code, year):
     r_value = np.corrcoef(x, y)[0, 1]
 
     # Set the labels for the X-axis and Y-axis
-    plt.xlabel("HCPCS Code")
+    plt.xlabel("Number of Devices Billed")
     plt.ylabel("Average Supplier Charge (USD)")
 
     # Set the title of the graph
@@ -286,3 +296,4 @@ create_line_chart(all_data, hcpcs_code)
 create_regional_table(all_data, hcpcs_code, year)
 create_us_heatmap(all_data, hcpcs_code, year)
 generate_scatterplot(all_data, hcpcs_code, year)
+

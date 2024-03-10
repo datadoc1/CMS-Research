@@ -7,8 +7,6 @@ import warnings
 import numpy as np
 warnings.filterwarnings('ignore')
 
-
-
 def extract_data(folder_name):
     all_data = pd.DataFrame()
     file_list = []
@@ -87,6 +85,7 @@ def create_line_chart(all_data, hcpcs_code):
     charges = [round(national_data[national_data["year"] == year]["Avg_Suplr_Sbmtd_Chrg"].median(), 2) for year in years]
 
     # Create a line graph
+    plt.figure(figsize=(10, 6))
     plt.plot(years, charges)
 
     # Set the labels for the X-axis and Y-axis
@@ -132,6 +131,7 @@ def create_differential_abundance_plot(all_data, hcpcs_code, year):
     bottom_values = sorted_data.head(5)
 
     # Create a differential abundance plot
+    plt.figure(figsize=(10, 7))
     plt.bar(bottom_values.index, bottom_values - median_value, color='green')
     plt.bar(top_values.index, top_values - median_value, color='red')
 
@@ -235,6 +235,7 @@ def generate_scatterplot(all_data, hcpcs_code, year):
     filtered_data = filtered_data[filtered_data["Rfrg_Prvdr_Geo_Lvl"] == "State"]
 
     # Create a scatterplot
+    plt.figure(figsize=(10, 5))
     plt.scatter(filtered_data["Tot_Suplr_Srvcs"], filtered_data["Avg_Suplr_Sbmtd_Chrg"], alpha=0.5)
 
     # Calculate the linear regression line
@@ -247,7 +248,7 @@ def generate_scatterplot(all_data, hcpcs_code, year):
     r_value = np.corrcoef(x, y)[0, 1]
 
     # Set the labels for the X-axis and Y-axis
-    plt.xlabel("Number of Devices Billed")
+    plt.xlabel("Number of Knee Orthoses Billed")
     plt.ylabel("Average Supplier Charge (USD)")
 
     # Set the title of the graph
@@ -278,6 +279,8 @@ all_data['year'] = all_data['year'].astype(int)
 highest_year = all_data["year"].max()
 lowest_year = all_data["year"].min()
 
+plt.rcParams['font.family'] = 'Times New Roman'
+
 # Filter the data further to include only rows with HCPCS_Cd values that appear at least 50 times
 while True:
     hcpcs_code = input("Enter the HCPCS code of interest: ")
@@ -297,3 +300,8 @@ create_regional_table(all_data, hcpcs_code, year)
 create_us_heatmap(all_data, hcpcs_code, year)
 generate_scatterplot(all_data, hcpcs_code, year)
 
+extract_data()
+
+# Figure 1. Supplier Charge for Knee Orthoses by State in 2021
+# Figure 2. National Average Supplier Charge for Knee Orthoses from 2013-2021
+# Figure 4. Supplier Charge vs. Knee Orthoses Volume by State in 2021
